@@ -5,7 +5,7 @@ const fs = require("fs");
 const { resolve } = require('path');
 let badword = JSON.parse(fs.readFileSync("badword.json", "utf8"));
 let emojiDB = JSON.parse(fs.readFileSync("emoji.json", "utf8"));
-console.log(client.actions.GuildMemberRemove)
+//console.log(client.actions.GuildMemberRemove)
 client.on('ready', x => {
   const channel = client.channels.cache.get('729359717616320663')
 }); 
@@ -16,7 +16,7 @@ client.on('guildMemberRemove',(member) => {
 
 client.on('guildMemberAdd', member => {
   const channel =  member.guild.channels.cache.find(ch => ch.name === '🏡general');
-  member.guild.channels.cache.find(ch => ch.name ==='📰developer-member-logs').send(`Selamat Datang **${member}** di Team UP Server, kamu memiliki username _**${member.user.tag}**_ Silahkan kunjungi <#724165603740483638> Untuk Ngobrol Bareng dan melihat info server `);
+  member.guild.channels.cache.find(ch => ch.name ==='📰members-logs').send(`Selamat Datang **${member}** di Team UP Server, kamu memiliki username _**${member.user.tag}**_ Silahkan kunjungi <#724165603740483638> Untuk Ngobrol Bareng dan melihat info server `);
   if (!channel) return;
   channel.send(`Selamat Datang di Server Team UP Dev ${member}, Oh iya jangan lupa tag skill kamu di <#729575194187923458> ya !!\n
   Server Info :
@@ -112,36 +112,58 @@ client.on('message',m => {
     }
 
     if(command == "poll"){
-
-        if(args[1]){
-          if(parseInt(args[1])>9) return;
-          let voteIt = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣'];
-          //console.log(args[0])
-          //channel.send(args[0])
-          channel.messages.fetch(args[0]).then(pesan => {
-            for(let i=0,p=Promise.resolve();i<parseInt(args[1]);i++){
-              p = p.then(()=>{
-                setTimeout(()=>{
-                  pesan.react(voteIt[i]);
-                  resolve();
-                },i*300)
-              })
-            }
-          })
-          .then(()=>{
-            m.delete()
-          }).catch(error=>{
-            console.log(error)
-          })
-          if(m.id === args[0]){
-            //console.log(m)
-            //channel.send(args[1])
-            //m.react('1️⃣');
+      if(args[1]){
+        if(parseInt(args[1])>9) return;
+        let voteIt = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣'];
+        //console.log(args[0])
+        //channel.send(args[0])
+        channel.messages.fetch(args[0]).then(pesan => {
+          for(let i=0,p=Promise.resolve();i<parseInt(args[1]);i++){
+            p = p.then(()=>{
+              setTimeout(()=>{
+                pesan.react(voteIt[i]);
+                resolve();
+              },i*300)
+            })
           }
-        }else{
-          channel.send(`Masukan ID posting atau banyak vote`)
+        })
+        .then(()=>{
+          m.delete()
+        }).catch(error=>{
+          console.log(error)
+        })
+        if(m.id === args[0]){
+          //console.log(m)
+          //channel.send(args[1])
+          //m.react('1️⃣');
         }
-      
+      }else{
+        channel.send(`Masukan ID posting atau banyak vote`)
+      }
+    }
+    let memList = []
+    if((command=="memlist" && m.author.id === "210834015165480970") || (m.author.id === "706271342353449011" && command=="memlist")){
+      let number = 0;
+     // m.channel.guild.members.cache.map((x,y) => memList.push(`${number += 1}\t${x.nickname}\t${x.user.id}\t${x.user.username}#${x.user.discriminator}`))
+     m.channel.guild.members.cache.map((x,y) => memList.push(`${x.user.username}#${x.user.discriminator}`))
+      let batch = Math.ceil(memList.length/40)
+      for(i = 0 , prom = Promise.resolve() ; i < batch ; i++){
+        let text = "```\n"
+        console.log(memList.length)
+        for(j=0;j<(40 <= memList.length?40:memList.length%40);j++){
+          console.log(`${memList.length%40} and ${memList.length%batch}`)
+          text += `${memList[(i*40)+j]}\n`;
+        }text += "```"
+        prom = prom.then(_ => new Promise(resolve => {
+          setTimeout(() => {
+            resolve();
+            //console.log(text)
+            channel.send(text)
+          },Math.random() * 2500) 
+        }))
+      }
+      console.log(m)
+      //channel.send(memList)
     }
     
      if(command == "emo"){
@@ -167,6 +189,7 @@ client.on('message',m => {
     if(m.channel.name === '❓help-desk') return;
     if(m.content[0] == ">") return;
     if(m.content[0] == "!") return;
+    if(m.content[0] == "-") return;
     m.content.toLowerCase().split(' ').forEach(y=> {
       if (badword[y]){
         text += `${badword[y]} `
