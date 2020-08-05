@@ -5,6 +5,7 @@ const fs = require("fs");
 const { resolve } = require('path');
 let badword = JSON.parse(fs.readFileSync("badword.json", "utf8"));
 let emojiDB = JSON.parse(fs.readFileSync("emoji.json", "utf8"));
+
 //console.log(client.actions.GuildMemberRemove)
 client.on('ready', x => {
   const channel = client.channels.cache.get('729359717616320663')
@@ -78,7 +79,10 @@ client.on('message',m => {
         m.reply(`Mau Check Role apa Dev <@${m.author.id}>`)
       }    
     }
-    
+    if(command == "initialgreet"){
+      const channel = client.channels.cache.get('739819187404406826')
+      channel.send(`Hai, selamat datang dan selamat bergabung di server Team Up :fingerheart:\nUntuk langkah awal, silahkan pilih role sesuai dengan hal yang sedang kamu tekuni saat ini.\n\n\nApakah kamu seorang developer atau minat di dunia developer, pilih role :computer:<@&732464029049552966>!\n\nApakah kamu seorang designer atau minat di dunia design?, pilih role :art:<@&739828625397907567>!\n\nApakah kamu seorang AI Enthusiast atau minat di dunia AI?, pilih role :desktop:<@&739828567826890813>!\n\nAtau jika kamu tertarik lebih dari 1 topik diatas, dan ingin mengaksesnya, kamu bisa pilih secara bersamaan!`)
+    }
     if(command == "info"){
       if(args[0]){
         let imgURL ='dummy';
